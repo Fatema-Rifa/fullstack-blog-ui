@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   // Sync Firebase ID token with our Express / MongoDB backend
   const syncWithBackend = useCallback(async (fbUser, customPayload = {}) => {
-    const idToken = await fbUser.getIdToken();
+    const idToken = await fbUser.getIdToken(true);
     const { data } = await api.post("/auth/firebase", {
       idToken,
       ...customPayload,
@@ -47,7 +47,8 @@ export const AuthProvider = ({ children }) => {
             // Token may have expired – sync fresh token with backend
             try {
               if (mounted) await syncWithBackend(fbUser);
-            } catch {
+            } catch (syncErr) {
+              console.error("Backend auth sync failed:", syncErr?.response?.data || syncErr.message);
               localStorage.removeItem("accessToken");
               if (mounted) setUser(null);
             }
@@ -56,7 +57,8 @@ export const AuthProvider = ({ children }) => {
           // No access token in storage, exchange Firebase token with backend
           try {
             if (mounted) await syncWithBackend(fbUser);
-          } catch {
+          } catch (syncErr) {
+            console.error("Backend auth sync failed:", syncErr?.response?.data || syncErr.message);
             if (mounted) setUser(null);
           }
         }
