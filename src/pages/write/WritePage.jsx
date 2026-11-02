@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -46,6 +46,8 @@ export default function WritePage() {
     },
   });
 
+  const submittingRef = useRef(false);
+
   const mutation = useMutation({
     mutationFn: (formData) =>
       isEdit ? postService.update(postData?.post?._id, formData) : postService.create(formData),
@@ -54,18 +56,26 @@ export default function WritePage() {
       navigate(`/posts/${post.slug}`);
     },
     onError: (err) => toast.error(err?.response?.data?.message || "Failed to save post"),
+    onSettled: () => { submittingRef.current = false; },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = (data, overrideStatus) => {
+    // Guard against duplicate submissions
+    if (submittingRef.current || mutation.isPending) return;
+    submittingRef.current = true;
+
+    const status = overrideStatus || data.status;
+
     if (!content || content === "<p></p>") {
       toast.error("Post content is required");
+      submittingRef.current = false;
       return;
     }
     const fd = new FormData();
     fd.append("title",   data.title);
     fd.append("content", content);
     fd.append("excerpt", data.excerpt || "");
-    fd.append("status",  data.status);
+    fd.append("status",  status);
     if (data.category) fd.append("category", data.category);
     selectedTags.forEach((t) => fd.append("tags", t));
     if (coverFile) fd.append("coverImage", coverFile);
@@ -126,18 +136,18 @@ export default function WritePage() {
             </div>
 
             <button
-              onClick={handleSubmit((d) => { setValue("status", "draft"); onSubmit(d); })}
-              disabled={mutation.isLoading}
+              onClick={handleSubmit((d) => onSubmit(d, "draft"))}
+              disabled={mutation.isPending}
               className="btn-md btn-secondary"
             >
               <Save size={15} /> Save Draft
             </button>
             <button
-              onClick={handleSubmit((d) => { setValue("status", "published"); onSubmit(d); })}
-              disabled={mutation.isLoading}
+              onClick={handleSubmit((d) => onSubmit(d, "published"))}
+              disabled={mutation.isPending}
               className="btn-md btn-gradient"
             >
-              {mutation.isLoading
+              {mutation.isPending
                 ? <Loader2 size={15} className="animate-spin" />
                 : <><Send size={15} /> Publish</>}
             </button>
