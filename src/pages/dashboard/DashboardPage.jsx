@@ -156,7 +156,7 @@ export default function DashboardPage() {
                       <Link to={`/posts/${post.slug}`} className="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all" title="View">
                         <EyeIcon size={15} />
                       </Link>
-                      <Link to={`/write/${post._id}`} className="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all" title="Edit">
+                      <Link to={`/write/${post.slug}`} className="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all" title="Edit">
                         <Pencil size={15} />
                       </Link>
                       <button
