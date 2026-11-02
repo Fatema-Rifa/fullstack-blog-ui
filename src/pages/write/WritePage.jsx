@@ -16,6 +16,8 @@ export default function WritePage() {
 
   const [content,    setContent]    = useState("");
   const [coverFile,  setCoverFile]  = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverUploading, setCoverUploading] = useState(false);
   const [coverPreview, setCoverPreview] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagInput,   setTagInput]   = useState("");
@@ -92,16 +94,9 @@ export default function WritePage() {
       };
       if (data.category) postPayload.category = data.category;
 
-      if (coverFile) {
-        const uploadedCover = await uploadToCloudinary(coverFile, "blogs");
-        if (!uploadedCover?.url) {
-          throw new Error("Cloudinary did not return an image URL");
-        }
-        postPayload.coverImage = {
-          url: uploadedCover.url,
-          publicId: uploadedCover.publicId,
-        };
-      }
+      if (coverUploading) throw new Error("Please wait for the cover image upload to finish");
+      if (coverFile && !coverImage?.url) throw new Error("Cover image upload failed");
+      if (coverImage?.url) postPayload.coverImage = coverImage;
 
       mutation.mutate(postPayload);
     } catch (error) {
@@ -110,11 +105,24 @@ export default function WritePage() {
     }
   };
 
-  const handleCover = (e) => {
+  const handleCover = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
+    setCoverImage(null);
+    setCoverUploading(true);
+    try {
+      const uploadedCover = await uploadToCloudinary(file, "blogs");
+      if (!uploadedCover?.url) throw new Error("Cloudinary did not return an image URL");
+      setCoverImage({ url: uploadedCover.url, publicId: uploadedCover.publicId || "" });
+    } catch (error) {
+      setCoverFile(null);
+      setCoverPreview("");
+      toast.error(error?.message || "Cover image upload failed");
+    } finally {
+      setCoverUploading(false);
+    }
   };
 
   const addTag = (name) => {
@@ -163,14 +171,14 @@ export default function WritePage() {
 
             <button
               onClick={handleSubmit((d) => onSubmit(d, "draft"))}
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || coverUploading}
               className="btn-md btn-secondary"
             >
               <Save size={15} /> Save Draft
             </button>
             <button
               onClick={handleSubmit((d) => onSubmit(d, "published"))}
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || coverUploading}
               className="btn-md btn-gradient"
             >
               {mutation.isPending
@@ -199,7 +207,7 @@ export default function WritePage() {
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                     <span className="text-white text-sm font-medium"><ImagePlus size={16} className="inline mr-1" />Change cover</span>
                     <button
-                      onClick={(e) => { e.stopPropagation(); setCoverFile(null); setCoverPreview(""); }}
+                      onClick={(e) => { e.stopPropagation(); setCoverFile(null); setCoverImage(null); setCoverPreview(""); }}
                       className="absolute top-3 right-3 bg-black/50 text-white rounded-full p-1.5 hover:bg-black/70 transition-colors"
                     >
                       <X size={14} />
