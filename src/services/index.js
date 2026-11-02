@@ -6,10 +6,10 @@ export const postService = {
   getByAuthor: (userId, params) => api.get(`/posts/by-author/${userId}`, { params }).then((r) => r.data),
 
   create: (formData) =>
-    api.post("/posts", formData, { headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data),
+    api.post("/posts", formData).then((r) => r.data),
 
   update: (id, formData) =>
-    api.put(`/posts/${id}`, formData, { headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data),
+    api.put(`/posts/${id}`, formData).then((r) => r.data),
 
   delete:     (id)  => api.delete(`/posts/${id}`).then((r) => r.data),
   toggleLike: (id)  => api.post(`/posts/${id}/like`).then((r) => r.data),
@@ -39,9 +39,7 @@ export const tagService = {
 export const userService = {
   getProfile: (username) => api.get(`/auth/users/${username}`).then((r) => r.data),
   updateProfile: (formData) =>
-    api.put("/auth/update-profile", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    }).then((r) => r.data),
+    api.put("/auth/update-profile", formData).then((r) => r.data),
   changePassword: (body) => api.put("/auth/change-password", body).then((r) => r.data),
   follow:         (id)   => api.post(`/auth/users/${id}/follow`).then((r) => r.data),
 };
