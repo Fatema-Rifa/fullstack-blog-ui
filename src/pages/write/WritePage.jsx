@@ -5,6 +5,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { ImagePlus, Loader2, Eye, Save, Send, X, Tag as TagIcon } from "lucide-react";
 import { postService, categoryService, tagService } from "../../services";
 import RichEditor from "../../components/editor/RichEditor";
+import { uploadToCloudinary } from "../../lib/cloudinary";
 import toast from "react-hot-toast";
 import clsx from "clsx";
 
@@ -63,7 +64,7 @@ export default function WritePage() {
     onSettled: () => { submittingRef.current = false; },
   });
 
-  const onSubmit = (data, overrideStatus) => {
+  const onSubmit = async (data, overrideStatus) => {
     // Guard against duplicate submissions
     if (submittingRef.current || mutation.isPending) return;
     submittingRef.current = true;
@@ -81,15 +82,28 @@ export default function WritePage() {
       submittingRef.current = false;
       return;
     }
-    const fd = new FormData();
-    fd.append("title",   data.title.trim());
-    fd.append("content", content);
-    fd.append("excerpt", data.excerpt || "");
-    fd.append("status",  status);
-    if (data.category) fd.append("category", data.category);
-    selectedTags.forEach((t) => fd.append("tags", t));
-    if (coverFile) fd.append("coverImage", coverFile);
-    mutation.mutate(fd);
+    try {
+      const fd = new FormData();
+      fd.append("title", data.title.trim());
+      fd.append("content", content);
+      fd.append("excerpt", data.excerpt || "");
+      fd.append("status", status);
+      if (data.category) fd.append("category", data.category);
+      selectedTags.forEach((t) => fd.append("tags", t));
+
+      if (coverFile) {
+        const uploadedCover = await uploadToCloudinary(coverFile, "blogs");
+        fd.append("coverImage", JSON.stringify({
+          url: uploadedCover.url,
+          publicId: uploadedCover.publicId,
+        }));
+      }
+
+      mutation.mutate(fd);
+    } catch (error) {
+      submittingRef.current = false;
+      toast.error(error?.message || "Cover image upload failed");
+    }
   };
 
   const handleCover = (e) => {
