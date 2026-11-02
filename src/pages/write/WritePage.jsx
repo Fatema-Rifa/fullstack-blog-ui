@@ -83,23 +83,27 @@ export default function WritePage() {
       return;
     }
     try {
-      const fd = new FormData();
-      fd.append("title", data.title.trim());
-      fd.append("content", content);
-      fd.append("excerpt", data.excerpt || "");
-      fd.append("status", status);
-      if (data.category) fd.append("category", data.category);
-      selectedTags.forEach((t) => fd.append("tags", t));
+      const postPayload = {
+        title: data.title.trim(),
+        content,
+        excerpt: data.excerpt || "",
+        status,
+        tags: selectedTags,
+      };
+      if (data.category) postPayload.category = data.category;
 
       if (coverFile) {
         const uploadedCover = await uploadToCloudinary(coverFile, "blogs");
-        fd.append("coverImage", JSON.stringify({
+        if (!uploadedCover?.url) {
+          throw new Error("Cloudinary did not return an image URL");
+        }
+        postPayload.coverImage = {
           url: uploadedCover.url,
           publicId: uploadedCover.publicId,
-        }));
+        };
       }
 
-      mutation.mutate(fd);
+      mutation.mutate(postPayload);
     } catch (error) {
       submittingRef.current = false;
       toast.error(error?.message || "Cover image upload failed");
