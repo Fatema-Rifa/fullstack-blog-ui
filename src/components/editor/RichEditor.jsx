@@ -2,12 +2,11 @@ import { useState, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
-import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import {
   Bold, Italic, Strikethrough, Code, Heading1, Heading2, Heading3,
   List, ListOrdered, Quote, Minus, Undo, Redo, Link as LinkIcon, Image as ImageIcon,
-  Loader2, Upload
+  Loader2
 } from "lucide-react";
 import clsx from "clsx";
 import { uploadToCloudinary } from "../../lib/cloudinary";
@@ -36,9 +35,8 @@ export default function RichEditor({ value, onChange }) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({ link: { openOnClick: false } }),
       Image.configure({ inline: false, allowBase64: true }),
-      Link.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: "Tell your story…" }),
     ],
     content: value,

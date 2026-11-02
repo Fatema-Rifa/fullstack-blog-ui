@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -66,13 +66,19 @@ export default function WritePage() {
 
     const status = overrideStatus || data.status;
 
-    if (!content || content === "<p></p>") {
-      toast.error("Post content is required");
+    const plainContent = content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    if (plainContent.length < 50) {
+      toast.error("Post content must be at least 50 characters");
+      submittingRef.current = false;
+      return;
+    }
+    if (data.title.trim().length < 5) {
+      toast.error("Title must be at least 5 characters");
       submittingRef.current = false;
       return;
     }
     const fd = new FormData();
-    fd.append("title",   data.title);
+    fd.append("title",   data.title.trim());
     fd.append("content", content);
     fd.append("excerpt", data.excerpt || "");
     fd.append("status",  status);
@@ -98,8 +104,6 @@ export default function WritePage() {
   };
 
   const removeTag = (tag) => setSelectedTags((t) => t.filter((x) => x !== tag));
-
-  const title = watch("title");
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-950">

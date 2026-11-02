@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import api from "../lib/api";
 import {
   auth,
@@ -16,17 +16,28 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const backendSyncRef = useRef(null);
 
   // Sync Firebase ID token with our Express / MongoDB backend
   const syncWithBackend = useCallback(async (fbUser, customPayload = {}) => {
-    const idToken = await fbUser.getIdToken(true);
-    const { data } = await api.post("/auth/firebase", {
-      idToken,
-      ...customPayload,
-    });
-    localStorage.setItem("accessToken", data.accessToken);
-    setUser(data.user);
-    return data.user;
+    if (backendSyncRef.current) return backendSyncRef.current;
+
+    backendSyncRef.current = (async () => {
+      const idToken = await fbUser.getIdToken(true);
+      const { data } = await api.post("/auth/firebase", {
+        idToken,
+        ...customPayload,
+      });
+      localStorage.setItem("accessToken", data.accessToken);
+      setUser(data.user);
+      return data.user;
+    })();
+
+    try {
+      return await backendSyncRef.current;
+    } finally {
+      backendSyncRef.current = null;
+    }
   }, []);
 
   // Listen for Firebase auth state changes & verify backend session on mount
