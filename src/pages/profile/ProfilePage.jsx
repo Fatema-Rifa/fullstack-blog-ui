@@ -89,7 +89,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="flex gap-2 pb-1">
+          <div className="flex gap-2 pb-1 w-full sm:w-auto">
             {isMe ? (
               <Link to="/settings" className="btn-md btn-secondary">Edit Profile</Link>
             ) : (
@@ -145,7 +145,7 @@ export default function ProfilePage() {
 
           {/* Posts */}
           <div className="lg:col-span-3">
-            <div className="flex gap-4 border-b border-surface-200 dark:border-surface-700 mb-6">
+            <div className="flex gap-4 border-b border-surface-200 dark:border-surface-700 mb-6 overflow-x-auto no-scrollbar pb-0.5">
               {["posts", "liked"].map((t) => (
                 <button
                   key={t}

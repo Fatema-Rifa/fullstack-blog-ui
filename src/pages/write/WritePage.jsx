@@ -193,7 +193,7 @@ export default function WritePage() {
             <input
               {...register("title", { required: "Title is required", minLength: { value: 5, message: "Min 5 chars" } })}
               placeholder="Your post title…"
-              className="w-full bg-transparent text-4xl font-bold font-serif text-surface-900 dark:text-white placeholder:text-surface-300 dark:placeholder:text-surface-700 focus:outline-none border-none"
+              className="w-full bg-transparent text-2xl sm:text-3xl lg:text-4xl font-bold font-serif text-surface-900 dark:text-white placeholder:text-surface-300 dark:placeholder:text-surface-700 focus:outline-none border-none"
             />
             {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
 

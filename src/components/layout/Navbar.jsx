@@ -107,7 +107,7 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search posts…"
-                className="input !py-2 !px-3 w-48 sm:w-64 text-sm"
+                className="input !py-1.5 sm:!py-2 !px-2.5 sm:!px-3 w-32 xs:w-44 sm:w-64 text-xs sm:text-sm"
               />
               <button type="button" onClick={() => setSearchOpen(false)} className="ml-1 btn-ghost btn-sm p-2">
                 <X size={16} />
@@ -200,7 +200,7 @@ export default function Navbar() {
       {/* Mobile menu drawer */}
       {mobileOpen && (
         <div className="md:hidden glass border-t border-surface-200 dark:border-surface-700 mt-3 animate-slide-down">
-          <nav className="page-container py-3 flex flex-col gap-1">
+          <nav className="page-container py-3 flex flex-col gap-1 max-h-[80vh] overflow-y-auto">
             {navLinks.map(({ to, label }) => (
               <NavLink
                 key={to}
@@ -209,10 +209,10 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) =>
                   clsx(
-                    "px-4 py-3 rounded-xl text-sm font-medium",
+                    "px-4 py-2.5 rounded-xl text-sm font-medium transition-colors",
                     isActive
                       ? "bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
-                      : "text-surface-600 dark:text-surface-400"
+                      : "text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800"
                   )
                 }
               >
@@ -220,13 +220,61 @@ export default function Navbar() {
               </NavLink>
             ))}
             {user ? (
-              <Link to="/write" onClick={() => setMobileOpen(false)} className="btn-md btn-gradient mt-2">
-                <PenSquare size={15} /> Write
-              </Link>
+              <>
+                <div className="my-2 border-t border-surface-200 dark:border-surface-700 pt-2">
+                  <div className="flex items-center gap-3 px-4 py-2">
+                    {user.avatar?.url ? (
+                      <img src={user.avatar.url} alt={user.username} className="avatar w-9 h-9" />
+                    ) : (
+                      <span className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-sm font-bold">
+                        {user.username?.[0]?.toUpperCase()}
+                      </span>
+                    )}
+                    <div>
+                      <p className="font-semibold text-sm text-surface-900 dark:text-white">{user.name || user.username}</p>
+                      <p className="text-xs text-surface-500">@{user.username}</p>
+                    </div>
+                  </div>
+                </div>
+                <Link
+                  to={`/profile/${user.username}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800"
+                >
+                  <User size={16} /> Profile
+                </Link>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800"
+                >
+                  <LayoutDashboard size={16} /> Dashboard
+                </Link>
+                <Link
+                  to="/bookmarks"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800"
+                >
+                  <Bookmark size={16} /> Bookmarks
+                </Link>
+                <Link
+                  to="/write"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn-md btn-gradient mt-2 w-full justify-center"
+                >
+                  <PenSquare size={15} /> Write New Post
+                </Link>
+                <button
+                  onClick={() => { handleLogout(); setMobileOpen(false); }}
+                  className="flex w-full items-center justify-center gap-2 mt-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                >
+                  <LogOut size={15} /> Sign out
+                </button>
+              </>
             ) : (
-              <div className="flex gap-2 mt-2">
-                <Link to="/login"    onClick={() => setMobileOpen(false)} className="btn-md btn-secondary flex-1">Sign in</Link>
-                <Link to="/register" onClick={() => setMobileOpen(false)} className="btn-md btn-gradient flex-1">Get started</Link>
+              <div className="flex gap-2 mt-3 pt-2 border-t border-surface-200 dark:border-surface-700">
+                <Link to="/login"    onClick={() => setMobileOpen(false)} className="btn-md btn-secondary flex-1 text-center justify-center">Sign in</Link>
+                <Link to="/register" onClick={() => setMobileOpen(false)} className="btn-md btn-gradient flex-1 text-center justify-center">Get started</Link>
               </div>
             )}
           </nav>

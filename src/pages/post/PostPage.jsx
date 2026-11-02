@@ -256,7 +256,7 @@ export default function PostPage() {
         </div>
 
         {/* Title */}
-        <h1 className="text-4xl sm:text-5xl font-bold font-serif text-surface-900 dark:text-white leading-tight mb-5 animate-slide-up">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold font-serif text-surface-900 dark:text-white leading-tight mb-4 sm:mb-5 animate-slide-up">
           {post.title}
         </h1>
 
@@ -320,51 +320,54 @@ export default function PostPage() {
         />
 
         {/* Reaction bar */}
-        <div className="flex items-center gap-4 py-5 border-y border-surface-200 dark:border-surface-700 mb-10">
+        <div className="flex items-center gap-2 sm:gap-4 py-3 sm:py-5 border-y border-surface-200 dark:border-surface-700 mb-8 sm:mb-10 flex-wrap">
           <button
             onClick={() => user ? likeMut.mutate() : navigate("/login")}
             className={clsx(
-              "flex items-center gap-2 px-4 py-2 rounded-xl transition-all font-medium text-sm",
+              "flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-all font-medium text-xs sm:text-sm",
               liked
                 ? "bg-red-50 dark:bg-red-900/20 text-red-500 ring-1 ring-red-200 dark:ring-red-800"
                 : "btn-secondary"
             )}
           >
-            <Heart size={16} className={liked ? "fill-red-500" : ""} /> {likeCount} Likes
+            <Heart size={15} className={liked ? "fill-red-500" : ""} /> <span>{likeCount}</span> <span className="hidden xs:inline">Likes</span>
           </button>
-          <button className="flex items-center gap-2 btn-sm btn-secondary">
-            <MessageCircle size={16} /> {commentsData?.pagination?.total || 0} Comments
+          <button className="flex items-center gap-1.5 sm:gap-2 btn-sm btn-secondary !px-3 sm:!px-4 !py-1.5 sm:!py-2 text-xs sm:text-sm">
+            <MessageCircle size={15} /> <span>{commentsData?.pagination?.total || 0}</span> <span className="hidden xs:inline">Comments</span>
           </button>
-          <div className="flex-1" />
+          <div className="flex-1 min-w-[8px]" />
           <button
             onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success("Link copied!"); }}
-            className="btn-sm btn-secondary"
+            className="btn-sm btn-secondary !p-2"
+            title="Share post link"
           >
             <Share2 size={15} />
           </button>
-          <button className="btn-sm btn-secondary"><Bookmark size={15} /></button>
+          <button className="btn-sm btn-secondary !p-2" title="Bookmark post"><Bookmark size={15} /></button>
         </div>
 
         {/* Author card */}
-        <div className="card p-6 mb-10 flex items-start gap-4">
-          <Link to={`/profile/${post.author?.username}`}>
-            {post.author?.avatar?.url ? (
-              <img src={post.author.avatar.url} alt="" className="avatar w-14 h-14" />
-            ) : (
-              <span className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xl font-bold">
-                {post.author?.username?.[0]?.toUpperCase()}
-              </span>
-            )}
-          </Link>
-          <div className="flex-1 min-w-0">
-            <Link to={`/profile/${post.author?.username}`} className="font-bold text-surface-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-              {post.author?.name || post.author?.username}
+        <div className="card p-4 sm:p-6 mb-10 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex items-center gap-3.5 sm:gap-4 flex-1 min-w-0">
+            <Link to={`/profile/${post.author?.username}`} className="flex-shrink-0">
+              {post.author?.avatar?.url ? (
+                <img src={post.author.avatar.url} alt="" className="avatar w-12 h-12 sm:w-14 sm:h-14" />
+              ) : (
+                <span className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-lg sm:text-xl font-bold">
+                  {post.author?.username?.[0]?.toUpperCase()}
+                </span>
+              )}
             </Link>
-            <p className="text-sm text-surface-500 mt-1 line-clamp-2">{post.author?.bio || "No bio yet."}</p>
-            <p className="text-xs text-surface-400 mt-1">{post.author?.followersCount || 0} followers</p>
+            <div className="min-w-0 flex-1">
+              <Link to={`/profile/${post.author?.username}`} className="font-bold text-surface-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-base sm:text-lg">
+                {post.author?.name || post.author?.username}
+              </Link>
+              <p className="text-xs sm:text-sm text-surface-500 mt-0.5 line-clamp-2">{post.author?.bio || "No bio yet."}</p>
+              <p className="text-xs text-surface-400 mt-1">{post.author?.followersCount || 0} followers</p>
+            </div>
           </div>
           {user && user._id !== post.author?._id && (
-            <button onClick={() => followMut.mutate()} className={clsx("btn-sm flex-shrink-0", isFollowing ? "btn-secondary" : "btn-primary")}>
+            <button onClick={() => followMut.mutate()} className={clsx("btn-sm w-full sm:w-auto flex-shrink-0 justify-center", isFollowing ? "btn-secondary" : "btn-primary")}>
               {isFollowing ? "Following" : "Follow"}
             </button>
           )}

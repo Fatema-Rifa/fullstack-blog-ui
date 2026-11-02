@@ -52,7 +52,7 @@ export default function HomePage() {
             <span className="badge-primary mb-4 inline-flex">
               <Sparkles size={12} /> The modern blogging platform
             </span>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold font-serif text-surface-900 dark:text-white leading-tight mb-6 text-balance">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-serif text-surface-900 dark:text-white leading-tight mb-4 sm:mb-6 text-balance">
               Where ideas come{" "}
               <span className="gradient-text">alive</span>
             </h1>
@@ -60,25 +60,25 @@ export default function HomePage() {
               Discover insightful stories from writers around the world, or start sharing your own.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/explore" className="btn-lg btn-gradient">
+              <Link to="/explore" className="btn-lg btn-gradient w-full sm:w-auto">
                 Start reading <ArrowRight size={18} />
               </Link>
-              <Link to="/register" className="btn-lg btn-secondary">
+              <Link to="/register" className="btn-lg btn-secondary w-full sm:w-auto">
                 Start writing for free
               </Link>
             </div>
           </div>
 
           {/* Stats row */}
-          <div className="grid grid-cols-3 gap-4 mt-14 max-w-2xl mx-auto text-center">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-10 sm:mt-14 max-w-2xl mx-auto text-center">
             {[
               { num: "10K+", label: "Articles published" },
               { num: "5K+",  label: "Active writers"     },
               { num: "50K+", label: "Monthly readers"    },
             ].map(({ num, label }) => (
-              <div key={label}>
-                <p className="text-3xl font-bold gradient-text">{num}</p>
-                <p className="text-sm text-surface-500 mt-1">{label}</p>
+              <div key={label} className="p-1 sm:p-0">
+                <p className="text-2xl sm:text-3xl font-bold gradient-text">{num}</p>
+                <p className="text-xs sm:text-sm text-surface-500 mt-1">{label}</p>
               </div>
             ))}
           </div>

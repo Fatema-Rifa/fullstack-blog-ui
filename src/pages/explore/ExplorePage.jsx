@@ -74,22 +74,24 @@ export default function ExplorePage() {
           )}
         </form>
 
-        {/* Sort */}
-        <select
-          value={sortBy}
-          onChange={(e) => setParam("sortBy", e.target.value)}
-          className="input !w-auto !py-3 text-sm cursor-pointer"
-        >
-          {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Sort */}
+          <select
+            value={sortBy}
+            onChange={(e) => setParam("sortBy", e.target.value)}
+            className="input !w-auto flex-1 sm:flex-initial !py-3 text-sm cursor-pointer"
+          >
+            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
 
-        <button
-          onClick={() => setFiltersOpen((o) => !o)}
-          className={clsx("btn-md btn-secondary gap-2", filtersOpen && "ring-2 ring-primary-500")}
-        >
-          <SlidersHorizontal size={15} /> Filters
-          {hasFilters && <span className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0" />}
-        </button>
+          <button
+            onClick={() => setFiltersOpen((o) => !o)}
+            className={clsx("btn-md btn-secondary gap-2 flex-1 sm:flex-initial justify-center", filtersOpen && "ring-2 ring-primary-500")}
+          >
+            <SlidersHorizontal size={15} /> Filters
+            {hasFilters && <span className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0" />}
+          </button>
+        </div>
       </div>
 
       {/* Filter panel */}
@@ -195,21 +197,21 @@ export default function ExplorePage() {
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-10">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-10">
           <button
             disabled={!pagination.hasPrevPage}
             onClick={() => setParam("page", String(page - 1))}
-            className="btn-md btn-secondary disabled:opacity-40"
+            className="btn-md btn-secondary disabled:opacity-40 text-xs sm:text-sm !px-3 sm:!px-4"
           >
-            Previous
+            Prev
           </button>
-          <div className="flex gap-1">
+          <div className="flex gap-1 overflow-x-auto no-scrollbar max-w-[160px] xs:max-w-[220px] sm:max-w-none py-1">
             {[...Array(pagination.totalPages)].map((_, i) => (
               <button
                 key={i}
                 onClick={() => setParam("page", String(i + 1))}
                 className={clsx(
-                  "w-9 h-9 rounded-xl text-sm font-medium transition-all",
+                  "w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-xs sm:text-sm font-medium transition-all flex-shrink-0",
                   page === i + 1
                     ? "bg-primary-600 text-white shadow-sm"
                     : "btn-ghost"
@@ -222,7 +224,7 @@ export default function ExplorePage() {
           <button
             disabled={!pagination.hasNextPage}
             onClick={() => setParam("page", String(page + 1))}
-            className="btn-md btn-secondary disabled:opacity-40"
+            className="btn-md btn-secondary disabled:opacity-40 text-xs sm:text-sm !px-3 sm:!px-4"
           >
             Next
           </button>

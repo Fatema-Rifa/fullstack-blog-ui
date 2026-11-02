@@ -52,7 +52,7 @@ export default function DashboardPage() {
   return (
     <div className="page-container py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-surface-900 dark:text-white">Dashboard</h1>
           <p className="text-surface-500 text-sm mt-1">Manage your posts</p>
@@ -83,7 +83,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-surface-200 dark:border-surface-700 mb-6">
+      <div className="flex gap-2 sm:gap-4 border-b border-surface-200 dark:border-surface-700 mb-6 overflow-x-auto no-scrollbar pb-0.5">
         {Object.entries(counts).map(([key, count]) => (
           <button
             key={key}
@@ -113,7 +113,8 @@ export default function DashboardPage() {
         </div>
       ) : (
         <div className="card overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[480px] sm:min-w-full">
             <thead className="bg-surface-50 dark:bg-surface-800/50 border-b border-surface-200 dark:border-surface-700">
               <tr>
                 <th className="text-left px-5 py-3 font-semibold text-surface-600 dark:text-surface-400">Post</th>
@@ -131,9 +132,14 @@ export default function DashboardPage() {
                       <Link to={`/posts/${post.slug}`} className="font-semibold text-surface-800 dark:text-surface-200 hover:text-primary-600 dark:hover:text-primary-400 line-clamp-1 transition-colors">
                         {post.title}
                       </Link>
-                      <p className="text-xs text-surface-400 mt-0.5">
-                        {post.publishedAt ? format(new Date(post.publishedAt), "MMM d, yyyy") : "Not published"}
-                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-xs text-surface-400">
+                          {post.publishedAt ? format(new Date(post.publishedAt), "MMM d, yyyy") : "Not published"}
+                        </p>
+                        <span className="md:hidden">
+                          <span className={clsx(STATUS_COLORS[post.status] || "badge-surface", "text-[10px] !px-1.5 !py-0.5")}>{post.status}</span>
+                        </span>
+                      </div>
                     </div>
                   </td>
                   <td className="px-4 py-4 hidden md:table-cell">
@@ -168,6 +174,7 @@ export default function DashboardPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>
