@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -45,6 +45,12 @@ export default function RichEditor({ value, onChange }) {
       attributes: { class: "focus:outline-none" },
     },
   });
+
+  useEffect(() => {
+    if (editor && value && editor.getHTML() !== value) {
+      editor.commands.setContent(value, false);
+    }
+  }, [editor, value]);
 
   if (!editor) return null;
 

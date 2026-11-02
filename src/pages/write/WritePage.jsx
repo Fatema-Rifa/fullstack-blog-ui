@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -35,16 +35,20 @@ export default function WritePage() {
     queryKey: ["post-edit", id],
     queryFn: () => postService.getBySlug(id),
     enabled: isEdit,
-    onSuccess: ({ post }) => {
-      setValue("title",    post.title);
-      setValue("excerpt",  post.excerpt);
-      setValue("category", post.category?._id || "");
-      setValue("status",   post.status);
-      setContent(post.content);
-      setCoverPreview(post.coverImage?.url || "");
-      setSelectedTags(post.tags?.map((t) => t.name) || []);
-    },
   });
+
+  useEffect(() => {
+    const post = postData?.post;
+    if (!post) return;
+
+    setValue("title", post.title);
+    setValue("excerpt", post.excerpt || "");
+    setValue("category", post.category?._id || "");
+    setValue("status", post.status);
+    setContent(post.content || "");
+    setCoverPreview(post.coverImage?.url || "");
+    setSelectedTags(post.tags?.map((t) => t.name) || []);
+  }, [postData, setValue]);
 
   const submittingRef = useRef(false);
 
